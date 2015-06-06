@@ -2,12 +2,13 @@
 
 use Event;
 use Blade;
-use KodiCMS\Users\Model\UserRole;
 use Package;
 use Request;
 use KodiCMS\Pages\Model\Page;
 use KodiCMS\Pages\Helpers\Block;
 use KodiCMS\Widgets\Model\Widget;
+use KodiCMS\Users\Model\UserRole;
+use KodiCMS\Widgets\Loader\WidgetLoader;
 use KodiCMS\Widgets\Manager\WidgetManager;
 use KodiCMS\CMS\Providers\ServiceProvider;
 use KodiCMS\Widgets\Model\SnippetCollection;
@@ -25,6 +26,13 @@ class ModuleServiceProvider extends ServiceProvider
 
 	public function boot()
 	{
+		$this->app->singleton('widgets.loader', function($app)
+		{
+			return new WidgetLoader($app['files'], base_path('widgets'));
+		});
+
+		app('widgets.loader')->init();
+
 		Page::creating(function($page)
 		{
 			$postData = Request::input('widgets', []);
